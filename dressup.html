@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>换装小游戏 · 一键穿搭</title>
+    <title>张校贺金主私人定制网站</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            user-select: none; /* 避免移动端长按选中文字，不影响体验 */
+            user-select: none;
         }
 
         body {
@@ -23,7 +23,6 @@
             margin: 0;
         }
 
-        /* 卡片容器 – 让图片有舒适阴影，类似相框 */
         .photo-card {
             position: relative;
             max-width: 900px;
@@ -33,10 +32,8 @@
             padding: 12px;
             backdrop-filter: blur(2px);
             box-shadow: 0 25px 45px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
-            transition: all 0.2s ease;
         }
 
-        /* 图片容器 – 相对定位用于放置两个选择框 */
         .image-wrapper {
             position: relative;
             border-radius: 36px;
@@ -47,18 +44,15 @@
             align-items: center;
         }
 
-        /* 主角照片：响应式，圆润边角，平滑显示 */
         .photo {
             display: block;
             width: 100%;
             height: auto;
             border-radius: 36px;
             transition: opacity 0.25s ease;
-            pointer-events: none;  /* 让图片不干扰按钮点击区域 */
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            pointer-events: none;
         }
 
-        /* ---------- 两个选择框 (半透明, 不挡主体) ---------- */
         .choice-buttons {
             position: absolute;
             bottom: 30px;
@@ -68,11 +62,9 @@
             justify-content: center;
             gap: 24px;
             z-index: 20;
-            /* 平滑出现/消失动画 */
             transition: opacity 0.2s ease, visibility 0.2s ease;
         }
 
-        /* 按钮样式 —— 清爽半透明磨砂框，大小适中不遮挡图片关键位置 */
         .dress-btn {
             background: rgba(30, 35, 48, 0.75);
             backdrop-filter: blur(8px);
@@ -81,94 +73,175 @@
             border-radius: 60px;
             font-size: 1.2rem;
             font-weight: 600;
-            letter-spacing: 1px;
             color: #fff6e0;
             cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-            font-family: inherit;
+            transition: all 0.25s;
             min-width: 140px;
             text-align: center;
-            backdrop-filter: blur(12px);
         }
 
-        /* 悬停/点击反馈 (PC & 移动端触摸效果) */
         .dress-btn:hover {
             background: rgba(80, 90, 110, 0.85);
-            border-color: rgba(255, 240, 180, 0.7);
             transform: scale(1.02);
-            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3);
         }
 
-        .dress-btn:active {
-            transform: scale(0.97);
-            background: rgba(180, 140, 200, 0.8);
-        }
+        .btn-swim { background: rgba(70, 130, 200, 0.65); }
+        .btn-bunny { background: rgba(210, 80, 120, 0.65); }
+        .btn-congyu { background: rgba(100, 150, 200, 0.65); }
 
-        /* 泳装按钮专属淡粉色调 (区分但保持半透明不突兀) */
-        .btn-swim {
-            background: rgba(70, 130, 200, 0.65);
-            backdrop-filter: blur(8px);
-        }
-        .btn-swim:hover {
-            background: rgba(90, 160, 230, 0.8);
-        }
-
-        /* 兔女郎按钮暖色 */
-        .btn-bunny {
-            background: rgba(210, 80, 120, 0.65);
-            backdrop-filter: blur(8px);
-        }
-        .btn-bunny:hover {
-            background: rgba(230, 100, 140, 0.8);
-        }
-
-        /* 隐藏按钮组（消失时不可见也不可点击） */
         .choice-buttons.hidden {
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
         }
 
-        /* 让图片底部留一点呼吸空间，避免按钮完全压在图片边缘 */
-        .image-wrapper {
-            margin-bottom: 0;
+        /* 计数器面板 */
+        .counter-panel {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            border-radius: 20px;
+            padding: 10px 16px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 500;
+            z-index: 100;
+            font-family: monospace;
+            pointer-events: none;
+        }
+        .counter-panel span {
+            color: #ffd966;
+            font-weight: bold;
         }
 
-        /* 小屏幕时按钮更紧凑，字体略微缩小，依旧优雅 */
+        /* 音乐可视化 */
+        .visualizer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 4px;
+            align-items: flex-end;
+            height: 40px;
+            z-index: 100;
+            pointer-events: none;
+        }
+        .visualizer .bar {
+            width: 6px;
+            background: linear-gradient(180deg, #ff9a9e, #fad0c4);
+            border-radius: 3px;
+            animation: bounce 0.8s infinite ease-in-out alternate;
+            transform-origin: bottom;
+        }
+        .visualizer .bar:nth-child(1) { height: 12px; animation-duration: 0.6s; animation-delay: 0.1s; }
+        .visualizer .bar:nth-child(2) { height: 24px; animation-duration: 0.8s; animation-delay: 0.2s; }
+        .visualizer .bar:nth-child(3) { height: 18px; animation-duration: 0.7s; animation-delay: 0.0s; }
+        .visualizer .bar:nth-child(4) { height: 30px; animation-duration: 0.9s; animation-delay: 0.3s; }
+        .visualizer .bar:nth-child(5) { height: 14px; animation-duration: 0.5s; animation-delay: 0.15s; }
+        .visualizer .bar:nth-child(6) { height: 22px; animation-duration: 0.75s; animation-delay: 0.05s; }
+
+        @keyframes bounce {
+            0% { transform: scaleY(0.4); opacity: 0.5; }
+            100% { transform: scaleY(1); opacity: 1; }
+        }
+
+        /* 音乐控制栏 */
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 40px;
+            padding: 6px 16px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            z-index: 100;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 0.9rem;
+            color: white;
+        }
+        .music-control button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 30px;
+            transition: 0.2s;
+        }
+        .music-control button:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        .music-control .now-playing {
+            font-size: 0.85rem;
+            background: rgba(0,0,0,0.5);
+            padding: 4px 12px;
+            border-radius: 30px;
+        }
+
+        /* 成就图片弹窗样式（类似我的世界） */
+        .achievement-toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            padding: 16px 24px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5), 0 0 0 3px #ffd966, 0 0 0 6px rgba(0,0,0,0.3);
+            z-index: 1000;
+            text-align: center;
+            animation: achievementPop 0.4s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+            pointer-events: none;
+        }
+        .achievement-toast img {
+            max-width: 280px;
+            max-height: 160px;
+            border-radius: 16px;
+            display: block;
+            margin-bottom: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .achievement-toast .title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #ffd966;
+            text-shadow: 0 1px 2px black;
+            letter-spacing: 1px;
+        }
+        @keyframes achievementPop {
+            0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
+            70% { transform: translate(-50%, -50%) scale(1.05); }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        @keyframes achievementFadeOut {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); visibility: hidden; }
+        }
+
         @media (max-width: 640px) {
-            .dress-btn {
-                padding: 8px 18px;
-                font-size: 1rem;
-                min-width: 110px;
-            }
-            .choice-buttons {
-                gap: 16px;
-                bottom: 20px;
-            }
-            .photo-card {
-                padding: 8px;
-                border-radius: 36px;
-            }
+            .dress-btn { padding: 8px 18px; font-size: 1rem; min-width: 110px; }
+            .choice-buttons { gap: 16px; bottom: 20px; }
+            .counter-panel { font-size: 0.75rem; padding: 6px 12px; }
+            .visualizer { height: 30px; gap: 3px; }
+            .music-control { padding: 4px 12px; gap: 10px; font-size: 0.7rem; }
+            .music-control button { font-size: 1rem; padding: 4px 8px; }
+            .achievement-toast img { max-width: 200px; max-height: 120px; }
+            .achievement-toast .title { font-size: 0.9rem; }
         }
 
-        /* 极窄设备依然美观 */
-        @media (max-width: 480px) {
-            .dress-btn {
-                padding: 6px 14px;
-                font-size: 0.9rem;
-                min-width: 90px;
-            }
-        }
-
-        /* 可选装饰: 右下角轻水印，不影响体验 */
         .info-tip {
             text-align: center;
             margin-top: 16px;
             font-size: 0.75rem;
             color: rgba(220, 220, 255, 0.5);
-            letter-spacing: 1px;
         }
     </style>
 </head>
@@ -176,181 +249,246 @@
 
 <div class="photo-card">
     <div class="image-wrapper">
-        <!-- 照片展示区：初始第一张照片 (默认) -->
-        <img id="characterPhoto" class="photo" src="https://picsum.photos/id/101/900/1200" alt="可爱角色照片" loading="eager">
-        
-        <!-- 两个半透明选择框 (按钮组) -->
+        <img id="characterPhoto" class="photo" src="原图.jpg" alt="角色照片">
         <div id="choiceBox" class="choice-buttons">
-            <button id="swimBtn" class="dress-btn btn-swim">👙 给他穿上泳装</button>
-            <button id="bunnyBtn" class="dress-btn btn-bunny">🐰 给他穿上兔女郎</button>
+            <button id="swimBtn" class="dress-btn btn-swim">点击帮他穿上泳装</button>
+            <button id="bunnyBtn" class="dress-btn btn-bunny">点击帮他穿上兔女郎</button>
+            <button id="congyuBtn" class="dress-btn btn-congyu">点击帮他穿上丛雨</button>
         </div>
     </div>
-    <div class="info-tip">
-         点击换装
-    </div>
+    <div class="info-tip">✨ 点击换装 ✨</div>
+</div>
+
+<div class="counter-panel">
+    🧥 换装次数<br>
+    👙 泳装: <span id="swimCount">0</span> &nbsp;|&nbsp;
+    🐰 兔女郎: <span id="bunnyCount">0</span> &nbsp;|&nbsp;
+    👘 丛雨: <span id="congyuCount">0</span>
+</div>
+
+<div class="visualizer">
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+</div>
+
+<div class="music-control">
+    <button id="prevBtn" title="上一曲">⏮</button>
+    <span id="currentTrack" class="now-playing">未播放</span>
+    <button id="playPauseBtn" title="播放/暂停">▶️</button>
+    <button id="nextBtn" title="下一曲">⏭</button>
 </div>
 
 <script>
-    // ======================= 图片配置区 =======================
-    // 【小白必看】👇👇👇 这里就是放三张照片的地方！
-    // 请将你准备好的三张照片重命名，或者替换成你的图片链接。
-    // 如果你想把图片放在和本网页同一个文件夹内：
-    //   例如你的照片分别叫做： "我的照片1.jpg", "泳装照片2.jpg", "兔女郎照片3.jpg"
-    //   那么就把下面三个路径改成对应的文件名（注意保留引号）
-    //
-    // 方式1（推荐）: 使用本地图片。假设图片都在当前目录下:
-    //   图片1: "photo_normal.jpg"
-    //   图片2: "photo_swim.jpg"
-    //   图片3: "photo_bunny.jpg"
-    //
-    // 方式2: 使用网络图片链接（例如图床链接），直接复制完整网址替换 "" 内的内容即可。
-    // ----------------------------------------------------------
-    
-    // 第1张照片（默认打开看到的照片）
+    // ======================= 图片配置 =======================
     const DEFAULT_PHOTO = "原图.jpg";
-    // 第2张照片（点击“穿上泳装”后切换到的照片）
     const SWIM_PHOTO   = "泳装.jpg";
-    // 第3张照片（点击“穿上兔女郎”后切换到的照片）
     const BUNNY_PHOTO  = "兔女郎.jpg";
-    
-    // 说明：以上三张是示例图片（来自 picsum 免费图库，展示不同风格）
-    // ========== 替换图片的超级简单教学 ==========
-    // ① 把你自己的三张图片复制到电脑上，最好命名简单，例如： 原图.jpg 、泳装.jpg 、兔女郎.jpg
-    // ② 把这三个文件放到跟这个网页文件 同一个文件夹 里。
-    // ③ 把下面三行等号右边的网址，改成你的文件名（带后缀，比如 .jpg .png）。
-    //    例如： const DEFAULT_PHOTO = "原图.jpg";
-    //          const SWIM_PHOTO   = "泳装.jpg";
-    //          const BUNNY_PHOTO  = "兔女郎.jpg";
-    // ④ 保存文件，刷新网页即可看到你自己的照片！ 超简单吧✨
-    // 如果你希望使用网络图片，复制网络图片地址（确保以 .jpg 或 .png 结尾的链接）直接替换就行。
-    // ============================================
-    
-    // 获取页面元素
-    const photoElement = document.getElementById('characterPhoto');
-    const choiceContainer = document.getElementById('choiceBox');
-    const swimButton = document.getElementById('swimBtn');
-    const bunnyButton = document.getElementById('bunnyBtn');
-    
-    // 计时器ID，用来管理5秒后显示按钮
-    let hideTimer = null;
-    
-    // 记录当前显示的图片完整路径 (用于避免重复切换相同图片时多余闪烁)
-    let currentPhotoSrc = DEFAULT_PHOTO;
-    
-    // 初始化照片
-    photoElement.src = currentPhotoSrc;
-    
-    // 【核心功能】隐藏两个选择框 + 清除之前的计时器，确保不会冲突
-    function hideChoiceButtons() {
-        // 如果已经隐藏就不用重复操作，但为了安全移除之前的计时器
-        if (hideTimer) {
-            clearTimeout(hideTimer);
-            hideTimer = null;
-        }
-        // 添加hidden类 (让按钮透明且无法点击)
-        if (!choiceContainer.classList.contains('hidden')) {
-            choiceContainer.classList.add('hidden');
-        }
-    }
-    
-    // 【核心功能】显示两个选择框 (并且清除定时器标记)
-    function showChoiceButtons() {
-        if (hideTimer) {
-            clearTimeout(hideTimer);
-            hideTimer = null;
-        }
-        // 移除hidden类，让按钮重新可见可点
-        if (choiceContainer.classList.contains('hidden')) {
-            choiceContainer.classList.remove('hidden');
-        }
-    }
-    
-    // 换装的核心逻辑：切换照片，并且隐藏按钮，等待5秒后再显示按钮
-    // targetPhoto: 目标图片的路径
-    // actionName: 只是为了调试或者以后扩展，不需要实际展示，但保留注释友好
-    function switchOutfit(targetPhoto, actionName) {
-        // 如果目标照片和当前照片一样，仍然需要执行“隐藏按钮+5秒后显示”的流程
-        // 但为了避免没意义的图片刷新，不修改src，但交互依然完整（按钮消失5秒再出现）
-        const isSamePhoto = (currentPhotoSrc === targetPhoto);
-        
-        // 1. 无论是否相同图片，先隐藏选择按钮（并且清除之前的倒计时）
-        hideChoiceButtons();
-        
-        // 2. 如果不是同一张照片，才更新图片src；如果相同照片则只做UI延迟显示效果（节省流量）
-        if (!isSamePhoto) {
-            // 轻微增加过渡体验，可先给图片一点点透明度过渡效果 (非必要但提升反馈)
-            photoElement.style.opacity = '0.7';
-            // 更新图片路径
-            photoElement.src = targetPhoto;
-            // 更新当前记录的照片地址
-            currentPhotoSrc = targetPhoto;
-            // 图片加载完成后恢复透明度
-            photoElement.onload = () => {
-                photoElement.style.opacity = '1';
-            };
-            // 如果加载失败也恢复透明度 (防止卡半透明)
-            photoElement.onerror = () => {
-                photoElement.style.opacity = '1';
-                console.warn("图片加载失败，请检查路径是否正确: ", targetPhoto);
-            };
-        } else {
-            // 即使是同一张照片，依然给予轻微视觉提示 (可选：短暂闪一下效果)
-            photoElement.style.transform = 'scale(0.99)';
-            setTimeout(() => {
-                if (photoElement) photoElement.style.transform = '';
-            }, 120);
-        }
-        
-        // 3. 设置5秒后重新显示两个选择框
-        if (hideTimer) clearTimeout(hideTimer); // 二次保险 (已经调用hideChoiceButtons清过一次)
-        hideTimer = setTimeout(() => {
-            // 5秒过后，按钮重新出现
-            showChoiceButtons();
-            hideTimer = null;
-        }, 1000);  // 1000毫秒 = 1秒
-    }
-    
-    // ----- 绑定按钮事件 (给“穿上泳装”和“穿上兔女郎”添加点击) -----
-    function bindEvents() {
-        // 泳装按钮：切换到第二张照片（SWIM_PHOTO）
-        swimButton.addEventListener('click', function() {
-            switchOutfit(SWIM_PHOTO, '泳装');
-        });
-        
-        // 兔女郎按钮：切换到第三张照片（BUNNY_PHOTO）
-        bunnyButton.addEventListener('click', function() {
-            switchOutfit(BUNNY_PHOTO, '兔女郎');
-        });
-    }
-    
-    // 额外优雅处理：页面完全加载后显示按钮（确保初始可见）
-    // 如果因为某些网络原因延迟，保证初始按钮是显示的
-    function initPage() {
-        bindEvents();
-        // 确保初始按钮是可见的（没有任何隐藏类）
-        showChoiceButtons();
-        // 设置初始当前照片变量同步
-        currentPhotoSrc = photoElement.src;
-        // 预加载另外两张照片（可选：提升切换速度，小白可忽略，但不影响体验）
-        // 这样点击切换时会更流畅（浏览器提前缓存）
-        const preloadImg1 = new Image();
-        preloadImg1.src = SWIM_PHOTO;
-        const preloadImg2 = new Image();
-        preloadImg2.src = BUNNY_PHOTO;
-        // 加上一个小细节：如果图片加载失败，提示在控制台，但用户无感知
-        console.log("✅ 换装页面加载完毕！点击泳装/兔女郎即可换装，每次换装后按钮会消失5秒~");
-    }
-    
-    // 启动一切
-    initPage();
-    
-    // 额外细节: 如果用户快速多次点击不同按钮，保证计时器总是重置并且5秒后按钮重现
-    // 已经通过 hideChoiceButtons 内的clearTimer + 每次switchOutfit重置计时器完美解决
-    // 并且隐藏状态下按钮无法被点击（因为pointer-events: none + visibility隐藏），所以不会有误触
-</script>
+    const CONGYU_PHOTO = "丛雨.jpg";
 
-<!-- =================================================== -->
-<!-- 手把手图文教学（如何添加到服务器 & 替换照片）请看下方详细步骤 -->
-<!-- =================================================== -->
+    // ======================= 按钮音效 =======================
+    function playSound(file) {
+        const audio = new Audio(file);
+        audio.play().catch(e => console.log("音效播放失败:", file, e));
+    }
+
+    // ======================= 成就图片弹窗 =======================
+    function showAchievementImage(imageFile, titleText) {
+        // 创建弹窗容器
+        const toast = document.createElement('div');
+        toast.className = 'achievement-toast';
+        
+        // 图片元素
+        const img = document.createElement('img');
+        img.src = imageFile;
+        img.alt = '成就解锁';
+        // 标题（可选）
+        const title = document.createElement('div');
+        title.className = 'title';
+        title.innerText = titleText || '成就解锁！';
+        
+        toast.appendChild(img);
+        toast.appendChild(title);
+        document.body.appendChild(toast);
+        
+        // 3秒后淡出移除
+        setTimeout(() => {
+            toast.style.animation = 'achievementFadeOut 0.5s forwards';
+            setTimeout(() => {
+                if (toast.parentNode) toast.remove();
+            }, 500);
+        }, 3000);
+    }
+
+    // 换装计数器
+    let swimCount = 0, bunnyCount = 0, congyuCount = 0;
+    let swimAch = false, bunnyAch = false, congyuAch = false;
+
+    function updateCounters() {
+        document.getElementById('swimCount').innerText = swimCount;
+        document.getElementById('bunnyCount').innerText = bunnyCount;
+        document.getElementById('congyuCount').innerText = congyuCount;
+    }
+
+    function addCount(type) {
+        switch(type) {
+            case 'swim':
+                swimCount++;
+                if (swimCount === 3 && !swimAch) {
+                    swimAch = true;
+                    showAchievementImage('泳装成就.jpg', '泳装成就解锁！');
+                }
+                break;
+            case 'bunny':
+                bunnyCount++;
+                if (bunnyCount === 3 && !bunnyAch) {
+                    bunnyAch = true;
+                    showAchievementImage('兔女郎成就.jpg', '兔女郎成就解锁！');
+                }
+                break;
+            case 'congyu':
+                congyuCount++;
+                if (congyuCount === 3 && !congyuAch) {
+                    congyuAch = true;
+                    showAchievementImage('丛雨成就.jpg', '丛雨成就解锁！');
+                }
+                break;
+        }
+        updateCounters();
+    }
+
+    // 换装逻辑
+    const photo = document.getElementById('characterPhoto');
+    const choiceBox = document.getElementById('choiceBox');
+    let hideTimer = null;
+    let currentPhoto = DEFAULT_PHOTO;
+    photo.src = currentPhoto;
+
+    function hideButtons() {
+        if (hideTimer) clearTimeout(hideTimer);
+        if (!choiceBox.classList.contains('hidden')) choiceBox.classList.add('hidden');
+    }
+    function showButtons() {
+        if (hideTimer) clearTimeout(hideTimer);
+        if (choiceBox.classList.contains('hidden')) choiceBox.classList.remove('hidden');
+    }
+    function switchOutfit(target, type) {
+        const same = (currentPhoto === target);
+        hideButtons();
+        if (!same) {
+            photo.style.opacity = '0.7';
+            photo.src = target;
+            currentPhoto = target;
+            photo.onload = () => photo.style.opacity = '1';
+            photo.onerror = () => { photo.style.opacity = '1'; console.warn("图片加载失败:", target); };
+        } else {
+            photo.style.transform = 'scale(0.99)';
+            setTimeout(() => photo.style.transform = '', 120);
+        }
+        addCount(type);
+        hideTimer = setTimeout(() => { showButtons(); hideTimer = null; }, 1000);
+    }
+
+    // 绑定换装按钮 + 音效
+    document.getElementById('swimBtn').onclick = () => {
+        playSound('wow.mp3');
+        switchOutfit(SWIM_PHOTO, 'swim');
+    };
+    document.getElementById('bunnyBtn').onclick = () => {
+        playSound('芳乃.mp3');
+        switchOutfit(BUNNY_PHOTO, 'bunny');
+    };
+    document.getElementById('congyuBtn').onclick = () => {
+        playSound('狗修金.mp3');
+        switchOutfit(CONGYU_PHOTO, 'congyu');
+    };
+    updateCounters();
+
+    // 预加载图片
+    [SWIM_PHOTO, BUNNY_PHOTO, CONGYU_PHOTO].forEach(src => { new Image().src = src; });
+
+    // ======================= 背景音乐播放器 =======================
+    const musicList = [
+        { file: "千恋万花.mp3", name: "千恋万花" },
+        { file: "Ciallo~.mp3", name: "Ciallo~" },
+        { file: "旮旯给木的专家.mp3", name: "旮旯给木的专家" },
+        { file: "旮旯给木你骗我.mp3", name: "旮旯给木你骗我" }
+    ];
+    let currentIdx = 0;
+    let isPlaying = false;
+    let musicStarted = false;   // 标记是否已经启动过音乐（任意点击）
+    const bgAudio = new Audio();
+    bgAudio.loop = true;
+
+    function updateTrackDisplay() {
+        document.getElementById('currentTrack').innerText = musicList[currentIdx].name;
+    }
+
+    function loadTrack(index) {
+        currentIdx = index;
+        bgAudio.src = musicList[currentIdx].file;
+        updateTrackDisplay();
+        if (isPlaying) {
+            bgAudio.play().catch(e => console.log("背景音乐播放失败:", e));
+        }
+    }
+
+    function playBgMusic() {
+        if (!bgAudio.src) loadTrack(0);
+        bgAudio.play().then(() => {
+            isPlaying = true;
+            document.getElementById('playPauseBtn').innerText = '⏸️';
+        }).catch(e => {
+            console.log("背景音乐播放失败，请检查文件是否存在", e);
+            // alert("无法播放背景音乐，请确保音乐文件存在（如：千恋万花.mp3）");
+        });
+    }
+
+    function pauseBgMusic() {
+        bgAudio.pause();
+        isPlaying = false;
+        document.getElementById('playPauseBtn').innerText = '▶️';
+    }
+
+    function togglePlay() {
+        if (isPlaying) pauseBgMusic();
+        else playBgMusic();
+    }
+
+    function prevTrack() {
+        let newIdx = currentIdx - 1;
+        if (newIdx < 0) newIdx = musicList.length - 1;
+        loadTrack(newIdx);
+        if (isPlaying) playBgMusic();
+    }
+
+    function nextTrack() {
+        let newIdx = currentIdx + 1;
+        if (newIdx >= musicList.length) newIdx = 0;
+        loadTrack(newIdx);
+        if (isPlaying) playBgMusic();
+    }
+
+    document.getElementById('playPauseBtn').onclick = togglePlay;
+    document.getElementById('prevBtn').onclick = prevTrack;
+    document.getElementById('nextBtn').onclick = nextTrack;
+    loadTrack(0);
+    bgAudio.preload = 'auto';
+
+    // ======================= 任意点击自动播放背景音乐（仅首次） =======================
+    function startMusicOnFirstClick() {
+        if (!musicStarted) {
+            playBgMusic();
+            musicStarted = true;
+            document.removeEventListener('click', startMusicOnFirstClick);
+            document.removeEventListener('touchstart', startMusicOnFirstClick);
+        }
+    }
+    document.addEventListener('click', startMusicOnFirstClick);
+    document.addEventListener('touchstart', startMusicOnFirstClick);
+</script>
 </body>
 </html>
