@@ -95,7 +95,7 @@
             pointer-events: none;
         }
 
-        /* 计数器面板 */
+        /* 计数器面板（左下角） */
         .counter-panel {
             position: fixed;
             bottom: 20px;
@@ -116,7 +116,7 @@
             font-weight: bold;
         }
 
-        /* 音乐可视化 */
+        /* 音乐可视化（右下角） */
         .visualizer {
             position: fixed;
             bottom: 20px;
@@ -147,31 +147,30 @@
             100% { transform: scaleY(1); opacity: 1; }
         }
 
-        /* 音乐控制栏 */
+        /* 音乐控制栏 - 移至右上角 */
         .music-control {
             position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+            top: 20px;
+            right: 20px;
             background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(8px);
             border-radius: 40px;
-            padding: 6px 16px;
+            padding: 5px 12px;
             display: flex;
-            gap: 16px;
+            gap: 8px;
             align-items: center;
             z-index: 100;
             border: 1px solid rgba(255, 255, 255, 0.3);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: white;
         }
         .music-control button {
             background: rgba(255, 255, 255, 0.2);
             border: none;
             color: white;
-            font-size: 1.2rem;
+            font-size: 1rem;
             cursor: pointer;
-            padding: 5px 10px;
+            padding: 4px 8px;
             border-radius: 30px;
             transition: 0.2s;
         }
@@ -179,10 +178,14 @@
             background: rgba(255, 255, 255, 0.4);
         }
         .music-control .now-playing {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             background: rgba(0,0,0,0.5);
-            padding: 4px 12px;
+            padding: 3px 10px;
             border-radius: 30px;
+            max-width: 100px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         /* 成就图片弹窗样式（类似我的世界） */
@@ -229,10 +232,22 @@
         @media (max-width: 640px) {
             .dress-btn { padding: 8px 18px; font-size: 1rem; min-width: 110px; }
             .choice-buttons { gap: 16px; bottom: 20px; }
-            .counter-panel { font-size: 0.75rem; padding: 6px 12px; }
-            .visualizer { height: 30px; gap: 3px; }
-            .music-control { padding: 4px 12px; gap: 10px; font-size: 0.7rem; }
-            .music-control button { font-size: 1rem; padding: 4px 8px; }
+            .counter-panel { font-size: 0.75rem; padding: 6px 12px; bottom: 10px; left: 10px; }
+            .visualizer { height: 30px; gap: 3px; right: 10px; bottom: 10px; }
+            .music-control {
+                top: 10px;
+                right: 10px;
+                padding: 4px 8px;
+                gap: 6px;
+            }
+            .music-control button {
+                font-size: 0.9rem;
+                padding: 3px 6px;
+            }
+            .music-control .now-playing {
+                font-size: 0.7rem;
+                max-width: 80px;
+            }
             .achievement-toast img { max-width: 200px; max-height: 120px; }
             .achievement-toast .title { font-size: 0.9rem; }
         }
@@ -251,9 +266,9 @@
     <div class="image-wrapper">
         <img id="characterPhoto" class="photo" src="原图.jpg" alt="角色照片">
         <div id="choiceBox" class="choice-buttons">
-            <button id="swimBtn" class="dress-btn btn-swim">点击帮他穿上泳装</button>
-            <button id="bunnyBtn" class="dress-btn btn-bunny">点击帮他穿上兔女郎</button>
-            <button id="congyuBtn" class="dress-btn btn-congyu">点击帮他穿上丛雨</button>
+            <button id="swimBtn" class="dress-btn btn-swim">👙 泳装</button>
+            <button id="bunnyBtn" class="dress-btn btn-bunny">🐰 兔女郎</button>
+            <button id="congyuBtn" class="dress-btn btn-congyu">👘 丛雨</button>
         </div>
     </div>
     <div class="info-tip">✨ 点击换装 ✨</div>
@@ -297,15 +312,12 @@
 
     // ======================= 成就图片弹窗 =======================
     function showAchievementImage(imageFile, titleText) {
-        // 创建弹窗容器
         const toast = document.createElement('div');
         toast.className = 'achievement-toast';
         
-        // 图片元素
         const img = document.createElement('img');
         img.src = imageFile;
         img.alt = '成就解锁';
-        // 标题（可选）
         const title = document.createElement('div');
         title.className = 'title';
         title.innerText = titleText || '成就解锁！';
@@ -314,7 +326,6 @@
         toast.appendChild(title);
         document.body.appendChild(toast);
         
-        // 3秒后淡出移除
         setTimeout(() => {
             toast.style.animation = 'achievementFadeOut 0.5s forwards';
             setTimeout(() => {
@@ -323,7 +334,7 @@
         }, 3000);
     }
 
-    // 换装计数器
+    // 换装计数器（成就触发次数改为3）
     let swimCount = 0, bunnyCount = 0, congyuCount = 0;
     let swimAch = false, bunnyAch = false, congyuAch = false;
 
@@ -419,7 +430,7 @@
     ];
     let currentIdx = 0;
     let isPlaying = false;
-    let musicStarted = false;   // 标记是否已经启动过音乐（任意点击）
+    let musicStarted = false;
     const bgAudio = new Audio();
     bgAudio.loop = true;
 
@@ -443,7 +454,6 @@
             document.getElementById('playPauseBtn').innerText = '⏸️';
         }).catch(e => {
             console.log("背景音乐播放失败，请检查文件是否存在", e);
-            // alert("无法播放背景音乐，请确保音乐文件存在（如：千恋万花.mp3）");
         });
     }
 
@@ -478,7 +488,7 @@
     loadTrack(0);
     bgAudio.preload = 'auto';
 
-    // ======================= 任意点击自动播放背景音乐（仅首次） =======================
+    // 任意点击自动播放背景音乐（仅首次）
     function startMusicOnFirstClick() {
         if (!musicStarted) {
             playBgMusic();
